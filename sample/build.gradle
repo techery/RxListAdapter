@@ -1,0 +1,88 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
+    }
+}
+
+apply plugin: 'com.android.application'
+//
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'me.tatarka.retrolambda' // should always be last
+apply plugin: 'com.github.ben-manes.versions'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    // App version
+    def versionMajor = 0
+    def versionMinor = 0
+    def versionPatch = 1
+    def versionBuild = 0 // bump for dogfood builds, public betas, etc.
+
+    defaultConfig {
+        applicationId "com.example.rxlistadapter"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+    }
+    signingConfigs {
+        release {
+            Properties signinProperties = new Properties()
+            def pFile = rootProject.file('signing/signing.properties')
+            if (pFile.exists()) {
+                signinProperties.load(new FileInputStream(pFile))
+                storeFile rootProject.file("signing/" + signinProperties.storeFile)
+                storePassword signinProperties.storePassword
+                keyAlias signinProperties.keyAlias
+                keyPassword signinProperties.keyPassword
+            }
+        }
+        debug {
+            // Use same debug certificate within team
+            storeFile rootProject.file("debug.keystore")
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+            versionNameSuffix ".${versionBuild}-dev"
+            signingConfig signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+        preDexLibraries = rootProject.ext.preDexLibs // disabled cause of MultiDex
+    }
+}
+
+repositories {
+    jcenter()
+    // maven { url "https://jitpack.io" }
+    // maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':library')
+    //
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
+}
