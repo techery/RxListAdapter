@@ -18,10 +18,6 @@ public class SimpleRxAdapterBridge<T> extends RxAdapterBridge<T, List<T>> {
         super(adapter, source, items);
     }
 
-    @Override protected Observable.Transformer<List<T>, List<T>> decorator() {
-        return super.decorator();
-    }
-
     @Override protected Subscriber<List<T>> subscriber() {
         return new Subscriber<List<T>>() {
             @Override public void onNext(List<T> newItems) {
