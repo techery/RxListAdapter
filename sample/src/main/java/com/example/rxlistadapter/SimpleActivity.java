@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
 public class SimpleActivity extends AppCompatActivity {
 
-    @Bind(R.id.list) RecyclerView recyclerView;
+    @BindView(R.id.list) RecyclerView recyclerView;
     PublishSubject<String> pipe = PublishSubject.create();
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {

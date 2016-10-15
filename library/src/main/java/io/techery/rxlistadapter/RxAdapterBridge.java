@@ -3,6 +3,7 @@ package io.techery.rxlistadapter;
 import android.support.v7.widget.RecyclerView;
 
 import com.trello.rxlifecycle.RxLifecycle;
+import com.trello.rxlifecycle.android.RxLifecycleAndroid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public abstract class RxAdapterBridge<T, O> {
         if (subscription != null) unsubscribe();
         subscription = bindObservable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxLifecycle.<O>bindView(recyclerView))
+                .compose(RxLifecycleAndroid.<O>bindView(recyclerView))
                 .subscribe(subscriber());
     }
 
